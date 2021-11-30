@@ -11,26 +11,27 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import { useAuthState } from "react-firebase-hooks/auth"
+import { useAuthState } from "react-firebase-hooks/auth";
 import getRecipientEmail from "../../utils/getRecipientEmail";
 
 function Chat({ messages, chat }) {
-  const [user] = useAuthState(auth)
+  console.log({ messages, chat });
+  const [user] = useAuthState(auth);
   return (
     <Container>
       <Head>
-        <title>{getRecipientEmail(chat.users,user)}</title>
+        <title>{getRecipientEmail(chat.users, user)}</title>
       </Head>
       <Sidebar />
       <ChatContainer>
-        <ChatScreen />
+        <ChatScreen chat={chat} messages={messages} />
       </ChatContainer>
     </Container>
   );
 }
 
 export default Chat;
-// await getDoc(query(chatRef, orderBy("timestamp", "asc")));
+
 export async function getServerSideProps(context) {
   const chatRef = query(
     collection(db, "chats", context.query.id, "messages"),
@@ -53,7 +54,7 @@ export async function getServerSideProps(context) {
     id: chatRes.id,
     ...chatRes.data(),
   };
-  console.log(chat, messages, chatRes.data(), context.query.id);
+  // console.log(chat, messages, chatRes.data(), context.query.id);
   return { props: { messages: JSON.stringify(messages), chat: chat } };
 }
 
@@ -61,4 +62,6 @@ const Container = styled.div`
   display: flex;
 `;
 
-const ChatContainer = styled.div``;
+const ChatContainer = styled.div`
+  flex: 1;
+`;

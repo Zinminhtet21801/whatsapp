@@ -6,7 +6,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import * as EmailValidator from "email-validator";
 import { signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
-import { collection, addDoc, query, where } from "firebase/firestore";
+import { collection, addDoc, query, where, orderBy } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "./Chat";
@@ -15,7 +15,7 @@ function Sidebar() {
   const [user] = useAuthState(auth);
   const userChatRef = query(
     collection(db, "chats"),
-    where("users", "array-contains", user.email)
+    where("users", "array-contains", user.email),
   );
   const [chatsSnapshot] = useCollection(userChatRef);
   const createChat = () => {
@@ -61,8 +61,8 @@ function Sidebar() {
       </Search>
 
       <SidebarButton onClick={createChat}>Start a new chat</SidebarButton>
-      {chatsSnapshot?.docs.map(chat=> (
-          <Chat key={chat.id} users={chat.data().users} id={chat.id} />
+      {chatsSnapshot?.docs.map((chat) => (
+        <Chat key={chat.id} users={chat.data().users} id={chat.id} />
       ))}
     </Container>
   );
@@ -70,7 +70,20 @@ function Sidebar() {
 
 export default Sidebar;
 
-const Container = styled.div``;
+const Container = styled.div`
+  flex: 0.45;
+  height: 100vh;
+  min-width: 300px;
+  max-width: 350px;
+  border-right: 1px solid whitesmoke;
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+`;
 
 const Search = styled.div`
   display: flex;
